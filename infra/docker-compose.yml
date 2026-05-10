@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  #İlişkisel veritabanı ( Auth , User, Video servisleri için )
+  postgres:
+    image: postgres:15-alpine
+    container_name: streamscape-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: streamscape
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Mesaj kuyruğu event bus ( Servisler arası iletişim için )
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: streamscape-rabbitmq
+    ports:
+      - "5672:5672" # Mesajlaşma portu
+      - "15672:15672" # Yönetim arayüzü (Browser'dan bakmak için)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+  
+  # Caching ve BullMQ ( Encoding işleri ve Realtime state için )
+  redis:
+    image: redis:7-alpine
+    container_name: streamscape-redis
+    ports:
+      - "6379:6379"
+  
+  # NoSQL Veritabanı ( Chat ve Bildirimler için )
+  mongodb:
+    image: mongo:6
+    container_name: streamscape-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+
+  # Object Storage ( Video dosyaları ve Thumbnail'lar için - Yerel S3 )
+  minio:
+    image: minio/minio
+    container_name: streamscape-minio
+    ports:
+      - "9000:9000" # API portu
+      - "9001:9001" # Console portu
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      -  minio_data:/data
+  
+volumes:
+  postgres_data:
+  mongodb_data:
+  minio_data:
