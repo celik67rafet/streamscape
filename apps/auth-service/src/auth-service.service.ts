@@ -1,10 +1,11 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { LoginUserDto, RegisterUserDto } from '@app/contracts';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class AuthServiceService {
@@ -16,6 +17,9 @@ export class AuthServiceService {
     @InjectRepository(User) // <- özel bir enjeksiyon...
     private readonly userRepository: Repository<User>, // <- constructor injection
     private readonly jwtService: JwtService, // jwtService enjekte ettik
+
+    @Inject('AUTH_SERVICE') // Module'de verdiğimiz isimle enjekte ediyoruz
+    private readonly client: ClientProxy,
 
   ) {}
 
@@ -40,7 +44,19 @@ export class AuthServiceService {
       passwordHash: hashedPassword,
     });
 
-    return this.userRepository.save(newUser);
+    // return this.userRepository.save(newUser);
+
+    const savedUser = await this.userRepository.save(newUser);
+
+    // RabbitMQ'ya mesaj gönder:
+    // "user_created" ismiyle mesajı fırlatıyoruz:
+    this.client.emit('user_created', {
+      userId: savedUser.id,
+      email: savedUser.email,
+      displayName: savedUser.displayName,
+    })
+
+    return savedUser;
 
   }
 

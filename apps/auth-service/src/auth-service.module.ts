@@ -5,9 +5,28 @@ import { User } from './entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config'; 
+import { ClientsModule, Transport } from '@nestjs/microservices'
 
 @Module({
   imports: [
+
+    ClientsModule.registerAsync([
+      {
+        name: 'AUTH_SERVICE', // Bu ismi servise enjekte ederken kullanacağız
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (config: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [config.get<string>('RABBITMQ_URL')],
+            queue: 'user_queue', // Mesajların gideceği ana kuyruk
+            queueOptions: {
+              durable: false
+            }
+          }
+        }) 
+      }
+    ]),
 
     // .env'yi tüm projede geçerli kıl:
     ConfigModule.forRoot({
