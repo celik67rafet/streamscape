@@ -4,6 +4,7 @@ import { UserServiceService } from './user-service.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserProfile } from './entities/user-profile.entitiy';
+import { Channel } from './entities/channel.entity';
 
 @Module({
   imports: [
@@ -18,12 +19,12 @@ import { UserProfile } from './entities/user-profile.entitiy';
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: [UserProfile],
+        entities: [UserProfile, Channel],
         synchronize: true, // Tabloyu otomatik oluşturur...
       }),
     }),
 
-    TypeOrmModule.forFeature([UserProfile])
+    TypeOrmModule.forFeature([UserProfile, Channel])
 
   ],
   

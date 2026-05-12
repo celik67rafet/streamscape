@@ -18,14 +18,24 @@ export class AuthMiddleware implements NestMiddleware{
 
         const token = authHeader.split(' ')[1]; // "Bearer" kısmını at, sadece token'ı al
         try{
+
+            console.log('Middleware\'e gelen token:', token);
+
             //2. Token'ı bizim secret ile doğrula:
             const payload = await this.jwtService.verifyAsync(token);
+
+            // İsteğin header kısmına 'x-user-id' diye bir alan ekliyoruz.
+            // Arkadaki servisler (User, Video vb.) kullanıcıyı buradan tanıyacak.
+            req.headers['x-user-id'] = payload.sub;
 
             // 3. Kullanıcı bilgilerini isteğe ekle ( İleride lazım olacak )
             req['user'] = payload;
 
             next(); // Her şey yolunda, geçebilirsin!
-        }catch{
+        }catch(error:any){
+
+            console.log('JWT Doğrulama Hatası: ', error.message);
+
             throw new UnauthorizedException('Geçersiz veya süresi dolmuş token!');
         }
 

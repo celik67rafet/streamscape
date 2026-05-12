@@ -56,9 +56,15 @@ import { ClientsModule, Transport } from '@nestjs/microservices'
     TypeOrmModule.forFeature([User]), // User tablosunu bu modülde kullanacağımızı söylüyoruz
 
     // Jwt yapılandırması:
-    JwtModule.register({
-      secret: 'super-secret-key-123', // Gerçek projede bu env'de olur...
-      signOptions: { expiresIn: '1d' } // Token 1 gün geçerli olsun.
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: ( config: ConfigService ) => ({
+        secret: config.get<string>('JWT_SECRET'), // .env deki o uzun anahtarı oku
+        signOptions: {
+          expiresIn: config.get<string>('JWT_EXPIRES_IN')
+        }
+      })
     })
   ],
   controllers: [AuthServiceController],

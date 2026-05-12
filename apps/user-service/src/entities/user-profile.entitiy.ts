@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, CreateDateColumn, OneToOne } from 'typeorm';
+import { Channel } from './channel.entity';
 
 @Entity('user_profile')
 export class UserProfile{
@@ -19,4 +20,8 @@ export class UserProfile{
 
     @CreateDateColumn()
     createdAt!: Date;
+
+    // birebir ilişki kurduk, bir user aynı zamanda bir kanalın sahibi yani owner'dır
+    @OneToOne(() => Channel, (channel) => channel.owner)
+    channel!: Channel;
 }
