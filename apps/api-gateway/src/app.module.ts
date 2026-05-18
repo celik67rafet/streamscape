@@ -36,7 +36,7 @@ export class AppModule implements NestModule{
     // Şimdilik test etmek için 'auth/profile' gibi hayali bir yolu koruyalım
     consumer
       .apply(AuthMiddleware)
-      .forRoutes('auth/me','users/me'); // Sadece /auth/me isteği atılırsa Token soracak
+      .forRoutes('auth/me','users/me','videos'); // Sadece /auth/me isteği atılırsa Token soracak
 
 
     // /auth ile başlayan tüm istekleri localhost:3000'e ( Auth servisine ) gönder
@@ -53,6 +53,12 @@ export class AppModule implements NestModule{
         proxyReqPathResolver: (req) => req.originalUrl // Gelen Url'i (users/me) olduğu gibi ilet
       })).forRoutes('users');
 
+    
+    consumer
+      .apply(proxy('http://127.0.0.1:3002', {
+        proxyReqPathResolver: (req) => req.originalUrl,
+        parseReqBody: false
+      })).forRoutes('videos');
 
       // Login ve Register ı public bırakıyoruz çünkü bir kullanıcı kayıt olurken veya giriş yaparken henüz token'ı yoktur.
   }
