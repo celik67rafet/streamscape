@@ -1,3 +1,5 @@
+code
+Markdown
 # StreamScape - Event-Driven Microservices Platform
 
 StreamScape, yüksek ölçeklenebilir video yükleme ve canlı yayın süreçlerini modelleyen, **Event-Driven (Olay Güdümlü)** mimariye sahip bir backend projesidir. Proje, mikroservisler arası asenkron iletişim, veri tutarlılığı ve dağıtık sistem prensipleri üzerine inşa edilmiştir.
@@ -56,24 +58,3 @@ npm run start:dev user-service
 npm run start:dev video-service
 npm run start:dev encoding-service
 Bu proje adım adım mikroservis mimarisi standartlarına göre geliştirilmektedir.
----
-
-### Şimdi Bunu GitHub'a Gönderelim
-
-Bu dosya şu an `main` branch'inde değil, muhtemelen hala son çalıştığın branch'tesin. Hadi bunu `main`'e taşıyalım:
-
-1.  **Değişikliği kaydet:**
-    ```bash
-    git add README.md
-    git commit -m "docs: add comprehensive readme with architecture details"
-    ```
-
-2.  **Main'e gönder:**
-    *(Eğer şu an main'deysen direkt push yapabilirsin. Eğer başka branch'teysen önce o branch'i pushla, sonra main'e merge et).*
-    ```bash
-    git push origin main
-    ```
-
-**GitHub'a girip baktığında artık projen boş bir klasör yığını gibi değil, profesyonel bir mimari proje gibi görünecek!**
-
-Dosyayı oluşturup pushladın mı? GitHub'da nasıl görünüyor? Beğendiysen ve onayın varsa **Aşama 5: Notification Service** (Bildirim Sistemi) ile devam edelim.
